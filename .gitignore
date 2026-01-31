@@ -1,0 +1,22 @@
+# Build artifacts
+.build/
+.swiftpm/
+DerivedData/
+xcuserdata/
+
+# Dependencies  
+Packages/
+
+# OS files
+.DS_Store
+
+# IDE
+.idea/
+*.swp
+
+# Environment
+.env
+
+# Session files
+.letta/
+.claude/
