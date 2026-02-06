@@ -206,20 +206,12 @@ public actor MLSClient {
     return try await withMLSUserPermit(for: normalizedDID) {
       try assertGeneration(generation, for: normalizedDID)
 
-      // POSIX advisory lock provides cross-process coordination with NSE.
-      // This is the ONLY lock needed - NSFileCoordinator was redundant and caused starvation.
-      // The advisory lock uses fcntl(F_SETLK) which is the same mechanism SQLite uses internally.
-      let lockAcquired = await MLSAdvisoryLockCoordinator.shared.acquireExclusiveLock(
-        for: normalizedDID, timeout: 5.0)
-      if !lockAcquired {
-        self.logger.warning("🔒 [MLSClient] Advisory lock busy for \(normalizedDID.prefix(20))... - cancelling operation")
-        throw CancellationError()
-      }
-      defer { MLSAdvisoryLockCoordinator.shared.releaseExclusiveLock(for: normalizedDID) }
+      // No advisory lock needed - SQLite WAL handles concurrent access
+      // Cross-process coordination uses Darwin notifications (MLSCrossProcess)
 
       try assertGeneration(generation, for: normalizedDID)
 
-      // Direct FFI call - no redundant NSFileCoordinator wrapper
+      // Direct FFI call
       let result = try await self.runFFIWithRecoveryLocked(for: normalizedDID, operation: operation)
 
       try assertGeneration(generation, for: normalizedDID)
@@ -340,6 +332,26 @@ public actor MLSClient {
       try FileManager.default.createDirectory(at: mlsStateDir, withIntermediateDirectories: true)
     } catch {
       logger.error("❌ Failed to create MLS state directory: \(error.localizedDescription)")
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CRITICAL: 0xdead10cc Migration - Check if database needs recreation
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Databases created before cipher_plaintext_header_size=32 was added have
+    // encrypted headers, causing iOS to fail to identify them as SQLite WAL
+    // databases. This prevents automatic checkpointing during suspension,
+    // leading to 0xdead10cc termination.
+    //
+    // This migration deletes old databases so they can be recreated with the
+    // plaintext header. MLS conversation history will be lost, but this is
+    // necessary to prevent 0xdead10cc crashes.
+    // ═══════════════════════════════════════════════════════════════════════════
+    let migrationPerformed = MLSPlaintextHeaderMigration.ensurePlaintextHeaderMigration(
+      for: userDID,
+      databaseType: .rustFFI
+    )
+    if migrationPerformed {
+      logger.warning("🔧 [0xdead10cc] Rust FFI database was recreated for plaintext header migration")
     }
 
     // Hash the DID to create a valid filename
@@ -2181,14 +2193,8 @@ public actor MLSClient {
     let normalizedDID = normalizeUserDID(userDID)
 
     try await withMLSUserPermit(for: normalizedDID) {
-      // Use advisory lock for cross-process coordination (same as runFFIWithRecovery)
-      let lockAcquired = await MLSAdvisoryLockCoordinator.shared.acquireExclusiveLock(
-        for: normalizedDID, timeout: 5.0)
-      if !lockAcquired {
-        self.logger.warning("🔒 [MLSClient] Advisory lock busy for flushStorage - cancelling")
-        throw CancellationError()
-      }
-      defer { MLSAdvisoryLockCoordinator.shared.releaseExclusiveLock(for: normalizedDID) }
+      // No advisory lock needed - SQLite WAL handles concurrent access
+      // Cross-process coordination uses Darwin notifications (MLSCrossProcess)
 
       try await self.flushStorageLocked(normalizedDID: normalizedDID)
     }
@@ -2228,19 +2234,13 @@ public actor MLSClient {
 
     do {
       return try await withMLSUserPermit(for: normalizedDID) {
-        // Use advisory lock for cross-process coordination (same as runFFIWithRecovery)
-        let lockAcquired = await MLSAdvisoryLockCoordinator.shared.acquireExclusiveLock(
-          for: normalizedDID, timeout: 5.0)
-        if !lockAcquired {
-          self.logger.warning("🔒 [MLSClient] Advisory lock busy for closeContext - cancelling")
-          throw CancellationError()
-        }
-        defer { MLSAdvisoryLockCoordinator.shared.releaseExclusiveLock(for: normalizedDID) }
+        // No advisory lock needed - SQLite WAL handles concurrent access
+        // Cross-process coordination uses Darwin notifications (MLSCrossProcess)
 
         return await self.closeContextLocked(normalizedDID: normalizedDID)
       }
     } catch {
-      logger.error("🚨 [MLSClient] Failed to acquire cross-process lock for closeContext: \(error.localizedDescription)")
+      logger.error("🚨 [MLSClient] Failed to acquire permit for closeContext: \(error.localizedDescription)")
       return false
     }
   }

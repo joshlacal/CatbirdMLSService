@@ -30,16 +30,15 @@ public extension MLSConversationManager {
     }
   }
 
-  /// Execute a database operation with advisory lock protection.
+  /// Execute a database operation (formerly with advisory lock protection).
+  /// No lock needed - SQLite WAL handles concurrent access.
+  /// Cross-process coordination uses Darwin notifications (MLSCrossProcess).
   /// For best-effort operations where failure is acceptable (uses try?).
   private func withAdvisoryLockBestEffort<T: Sendable>(
     for userDid: String,
     operation: @Sendable @escaping () async throws -> T
   ) async -> T? {
-    let lockAcquired = await MLSAdvisoryLockCoordinator.shared.acquireExclusiveLock(
-      for: userDid, timeout: 5.0)
-    guard lockAcquired else { return nil }
-    defer { MLSAdvisoryLockCoordinator.shared.releaseExclusiveLock(for: userDid) }
+    // No advisory lock needed - SQLite WAL handles concurrent access
     return try? await operation()
   }
 
@@ -231,13 +230,8 @@ public extension MLSConversationManager {
     )
 
     do {
-      // Use advisory lock for cross-process coordination with NSE
-      let lockAcquired = await MLSAdvisoryLockCoordinator.shared.acquireExclusiveLock(
-        for: userDid, timeout: 5.0)
-      guard lockAcquired else {
-        throw MLSConversationError.operationFailed("Advisory lock busy")
-      }
-      defer { MLSAdvisoryLockCoordinator.shared.releaseExclusiveLock(for: userDid) }
+      // No advisory lock needed - SQLite WAL handles concurrent access
+      // Cross-process coordination uses Darwin notifications (MLSCrossProcess)
 
       let adopted = try await self.withDatabaseRecovery(currentUserDID: userDid) { db in
         try await self.storage.savePayloadForMessage(
@@ -265,6 +259,10 @@ public extension MLSConversationManager {
       logger.info(
         "🧾 [ATOMIC] Commit attempt=\(context.attemptID) queue=\(context.queueIndex) msg=\(message.id.prefix(16)) seq=\(message.seq) cursor=\(cursorAfter)"
       )
+
+      // Notify cross-process observers of database change
+      MLSCrossProcess.shared.notifyChanged()
+
       return adopted
     } catch {
       logger.error(
@@ -810,14 +808,9 @@ public extension MLSConversationManager {
         
         // FIX D: Clear any persistent decryption failure tracking on success
         clearPersistentDecryptionFailure(messageID: message.id)
-        
-        // Use advisory lock for cross-process coordination with NSE
-        let lockAcquired = await MLSAdvisoryLockCoordinator.shared.acquireExclusiveLock(
-          for: userDid, timeout: 5.0)
-        guard lockAcquired else {
-          throw MLSConversationError.operationFailed("Advisory lock busy for recordMessageProcessed")
-        }
-        defer { MLSAdvisoryLockCoordinator.shared.releaseExclusiveLock(for: userDid) }
+
+        // No advisory lock needed - SQLite WAL handles concurrent access
+        // Cross-process coordination uses Darwin notifications (MLSCrossProcess)
 
         let readyMessages = try await self.messageOrderingCoordinator.recordMessageProcessed(
           messageID: message.id,
@@ -826,6 +819,9 @@ public extension MLSConversationManager {
           currentUserDID: userDid,
           database: self.database
         )
+
+        // Notify cross-process observers of database change
+        MLSCrossProcess.shared.notifyChanged()
 
         // Process any buffered messages that are now ready (recursive processing)
         for pending in readyMessages {

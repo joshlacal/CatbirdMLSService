@@ -1,0 +1,4 @@
+module MLSFFICore {
+    header "MLSFFICore.h"
+    export *
+}

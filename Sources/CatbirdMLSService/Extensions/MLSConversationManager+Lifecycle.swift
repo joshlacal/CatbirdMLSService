@@ -6,6 +6,118 @@ import Petrel
 
 extension MLSConversationManager {
 
+  // MARK: - App Suspension (0xdead10cc Prevention)
+
+  /// Flag indicating MLS operations are suspended for app backgrounding
+  /// This is different from `isShuttingDown` - suspension is temporary and reversible
+  private static var _isSuspending = false
+
+  /// Check if MLS operations are suspended for app backgrounding
+  public var isSuspending: Bool {
+    get { Self._isSuspending }
+    set { Self._isSuspending = newValue }
+  }
+
+  /// Suspend all MLS operations when app enters background
+  /// This prevents 0xdead10cc crashes by ensuring no database operations
+  /// continue running when iOS suspends the app
+  ///
+  /// Call this BEFORE GRDBSuspensionCoordinator.setLifecycleSuspended() to ensure
+  /// MLS tasks are cancelled before GRDB starts rejecting operations
+  ///
+  /// - Note: This is NOT the same as shutdown() - we don't close databases or clear state
+  ///         We simply cancel in-flight tasks to prevent them from holding locks
+  @MainActor
+  public func suspendMLSOperations() {
+    logger.info("⏸️ [SUSPEND] Suspending MLS operations for app background")
+
+    // Set flag to reject new operations
+    isSuspending = true
+    isSyncPaused = true
+
+    // Cancel all background tasks that might hold database connections
+    // These tasks perform database operations and would cause 0xdead10cc if running during suspension
+
+    if let task = missingConversationsTask {
+      task.cancel()
+      logger.debug("   Cancelled missingConversationsTask")
+    }
+    missingConversationsTask = nil
+
+    if let task = groupInfoRefreshTask {
+      task.cancel()
+      logger.debug("   Cancelled groupInfoRefreshTask")
+    }
+    groupInfoRefreshTask = nil
+
+    if let task = periodicSyncTask {
+      task.cancel()
+      logger.debug("   Cancelled periodicSyncTask")
+    }
+    periodicSyncTask = nil
+
+    if let task = orphanAdoptionTask {
+      task.cancel()
+      logger.debug("   Cancelled orphanAdoptionTask")
+    }
+    orphanAdoptionTask = nil
+
+    if let task = cleanupTask {
+      task.cancel()
+      logger.debug("   Cancelled cleanupTask (background cleanup)")
+    }
+    cleanupTask = nil
+
+    // Also cancel tracked tasks to invalidate any in-flight operations
+    cancelAllTrackedTasks()
+
+    logger.info("✅ [SUSPEND] MLS operations suspended - safe for app suspension")
+  }
+
+  /// Resume MLS operations when app returns to foreground
+  /// This restarts background tasks that were cancelled during suspension
+  @MainActor
+  public func resumeMLSOperations() {
+    guard isSuspending else {
+      logger.debug("🔄 [RESUME] MLS not suspended - nothing to resume")
+      return
+    }
+
+    logger.info("▶️ [RESUME] Resuming MLS operations after app foreground")
+
+    // Clear suspension flags
+    isSuspending = false
+    isSyncPaused = false
+
+    // Restart background tasks (only if we're initialized)
+    guard isInitialized else {
+      logger.debug("   Skipping task restart - not initialized")
+      return
+    }
+
+    // Restart periodic tasks
+    if configuration.enableAutomaticCleanup && cleanupTask == nil {
+      startBackgroundCleanup()
+    }
+
+    if periodicSyncTask == nil {
+      startPeriodicSync()
+    }
+
+    if orphanAdoptionTask == nil {
+      startOrphanAdoptionTask()
+    }
+
+    if groupInfoRefreshTask == nil {
+      startGroupInfoRefreshTask()
+    }
+
+    // Note: missingConversationsTask is typically only run during initialization
+    // If needed, it will be triggered by syncWithServer or explicit rejoin requests
+
+    logger.info("✅ [RESUME] MLS operations resumed")
+  }
+
   internal func throwIfShuttingDown(_ operation: String) throws {
     if isShuttingDown {
       logger.warning("⏸️ [MLSConversationManager] \(operation) aborted - storage reset in progress")
@@ -185,12 +297,6 @@ extension MLSConversationManager {
     // ViewModels, background tasks, and NSE may still be executing database operations.
     // Draining is now handled by MLSShutdownCoordinator below.
     // ═══════════════════════════════════════════════════════════════════════════
-    if let shutdownUserDid = shutdownUserDid {
-      logger.info("📝 [SHUTDOWN-STEP-2] Releasing per-group locks...")
-      MLSGroupLockCoordinator.shared.releaseAllLocksForUser(shutdownUserDid)
-      logger.info("✅ [SHUTDOWN-STEP-2] Per-group locks released")
-    }
-
     // 2. Wait a moment for writes to finish (optional but recommended for SQLCipher flush)
     try? await Task.sleep(nanoseconds: 200_000_000)
 

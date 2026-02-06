@@ -189,6 +189,9 @@ public final class MLSConversationManager {
   /// Flag indicating the manager is preparing for shutdown/storage reset
   public var isShuttingDown = false
 
+  // Note: isSuspending is defined in MLSConversationManager+Lifecycle.swift as a static-backed
+  // computed property for 0xdead10cc prevention (extensions can't add stored instance properties)
+
   /// Serializes MLS message processing per conversation to avoid concurrent ratchet advances
   public let messageProcessingCoordinator = ConversationProcessingCoordinator()
 

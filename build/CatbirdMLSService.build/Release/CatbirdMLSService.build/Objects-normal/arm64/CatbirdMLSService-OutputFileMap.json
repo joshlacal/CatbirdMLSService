@@ -1,0 +1,201 @@
+{
+  "" : {
+    "const-values" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/CatbirdMLSService-primary.swiftconstvalues",
+    "dependencies" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/CatbirdMLSService-primary.d",
+    "diagnostics" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/CatbirdMLSService-primary.dia",
+    "emit-module-dependencies" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/CatbirdMLSService-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/CatbirdMLSService-primary-emit-module.dia",
+    "pch" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/CatbirdMLSService-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/CatbirdMLSService-primary.swiftdeps"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/Components/MLSKeyPackageManager.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSKeyPackageManager.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSKeyPackageManager.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSKeyPackageManager.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/Extensions/MLSConversationManager+Events.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Events.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Events.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Events.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/Extensions/MLSConversationManager+Groups.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Groups.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Groups.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Groups.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/Extensions/MLSConversationManager+Keys.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Keys.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Keys.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Keys.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/Extensions/MLSConversationManager+Lifecycle.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Lifecycle.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Lifecycle.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Lifecycle.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/Extensions/MLSConversationManager+Members.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Members.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Members.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Members.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/Extensions/MLSConversationManager+Sync.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Sync.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Sync.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Sync.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/Extensions/MLSConversationModel+Extensions.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationModel+Extensions.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationModel+Extensions.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationModel+Extensions.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSAPIClient.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSAPIClient.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSAPIClient.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSAPIClient.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSChatAvailabilityService.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSChatAvailabilityService.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSChatAvailabilityService.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSChatAvailabilityService.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSClient.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSClient.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSClient.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSClient.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSConversationManager+MessageSender.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+MessageSender.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+MessageSender.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+MessageSender.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSConversationManager+Messaging.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Messaging.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Messaging.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager+Messaging.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSConversationManager.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSConversationManager.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSCoordinators.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSCoordinators.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSCoordinators.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSCoordinators.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSDeviceManager.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSDeviceManager.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSDeviceManager.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSDeviceManager.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSDeviceSyncManager.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSDeviceSyncManager.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSDeviceSyncManager.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSDeviceSyncManager.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSDiagnosticLogger.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSDiagnosticLogger.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSDiagnosticLogger.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSDiagnosticLogger.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSEventCursorStore.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSEventCursorStore.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSEventCursorStore.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSEventCursorStore.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSEventStreamManager.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSEventStreamManager.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSEventStreamManager.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSEventStreamManager.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSJoinPolicyValidator.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSJoinPolicyValidator.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSJoinPolicyValidator.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSJoinPolicyValidator.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSKeyPackageCache.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSKeyPackageCache.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSKeyPackageCache.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSKeyPackageCache.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSKeyPackageMonitor.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSKeyPackageMonitor.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSKeyPackageMonitor.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSKeyPackageMonitor.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSKeychain.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSKeychain.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSKeychain.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSKeychain.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSMembershipChangeObserver.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSMembershipChangeObserver.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSMembershipChangeObserver.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSMembershipChangeObserver.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSMessageOrderingCoordinator.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSMessageOrderingCoordinator.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSMessageOrderingCoordinator.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSMessageOrderingCoordinator.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSMessagePadding.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSMessagePadding.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSMessagePadding.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSMessagePadding.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSMessageValidator.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSMessageValidator.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSMessageValidator.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSMessageValidator.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSRecoveryManager.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSRecoveryManager.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSRecoveryManager.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSRecoveryManager.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSStateObservation.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSStateObservation.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSStateObservation.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSStateObservation.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSStorageMaintenanceCoordinating.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSStorageMaintenanceCoordinating.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSStorageMaintenanceCoordinating.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSStorageMaintenanceCoordinating.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSSyncValidator.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSSyncValidator.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSSyncValidator.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSSyncValidator.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSTreeHashPinning.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSTreeHashPinning.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSTreeHashPinning.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSTreeHashPinning.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSTypes.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSTypes.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSTypes.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSTypes.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/MLSWelcomeCoordinator.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSWelcomeCoordinator.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSWelcomeCoordinator.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/MLSWelcomeCoordinator.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/Models/DecryptedMLSMessage.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/DecryptedMLSMessage.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/DecryptedMLSMessage.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/DecryptedMLSMessage.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/Models/KeyPackageBatchResult.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/KeyPackageBatchResult.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/KeyPackageBatchResult.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/KeyPackageBatchResult.o"
+  },
+  "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/Sources/CatbirdMLSService/Models/KeyPackageStats+Extensions.swift" : {
+    "index-unit-output-path" : "/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/KeyPackageStats+Extensions.o",
+    "llvm-bc" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/KeyPackageStats+Extensions.bc",
+    "object" : "/Users/joshlacalamito/Developer/Catbird+Petrel/CatbirdMLSService/build/CatbirdMLSService.build/Release/CatbirdMLSService.build/Objects-normal/arm64/KeyPackageStats+Extensions.o"
+  }
+}
