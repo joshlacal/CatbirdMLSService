@@ -19,14 +19,15 @@ public extension MLSConversationManager {
   }
 
   /// Smart key package refresh using monitor (preferred method)
-  public func smartRefreshKeyPackages() async throws {
+  public func smartRefreshKeyPackages(maxGeneratedPackages: Int? = nil) async throws {
     guard let userDid = userDid else {
       throw MLSConversationError.noAuthentication
     }
-    // Note: isShuttingDown is internal to Manager, access it directly
-    // This assumes checking isShuttingDown on Manager is sufficient
-    // But we pass it to actor just in case
-    try await keyPackageManager.smartRefreshKeyPackages(for: userDid, isShuttingDown: false) 
+    try await keyPackageManager.smartRefreshKeyPackages(
+      for: userDid,
+      isShuttingDown: isShuttingDown,
+      maxGeneratedPackages: maxGeneratedPackages
+    )
   }
 
   /// Basic refresh without smart monitoring (fallback/legacy)
@@ -44,11 +45,18 @@ public extension MLSConversationManager {
 
   /// Smart batch upload using batch API (preferred method)
   /// Ensures local key packages exist AND uploads to server if needed
-  public func uploadKeyPackageBatchSmart(count: Int = 100) async throws {
+  public func uploadKeyPackageBatchSmart(
+    count: Int = 100,
+    maxGeneratedPackages: Int? = nil
+  ) async throws {
     guard let userDid = userDid else {
       throw MLSConversationError.noAuthentication
     }
-    try await keyPackageManager.uploadKeyPackageBatchSmart(for: userDid, count: count)
+    try await keyPackageManager.uploadKeyPackageBatchSmart(
+      for: userDid,
+      count: count,
+      maxGeneratedPackages: maxGeneratedPackages
+    )
   }
 
   /// Legacy batch upload method for backward compatibility
@@ -57,12 +65,16 @@ public extension MLSConversationManager {
   }
 
   /// Refresh key packages based on time interval
-  public func refreshKeyPackagesBasedOnInterval() async throws {
+  public func refreshKeyPackagesBasedOnInterval(maxGeneratedPackages: Int? = nil) async throws {
     guard let userDid = userDid else {
       // If no userDid, we can't refresh. Just return.
       return
     }
-    try await keyPackageManager.refreshKeyPackagesBasedOnInterval(for: userDid, isShuttingDown: false)
+    try await keyPackageManager.refreshKeyPackagesBasedOnInterval(
+      for: userDid,
+      isShuttingDown: isShuttingDown,
+      maxGeneratedPackages: maxGeneratedPackages
+    )
   }
 
 }

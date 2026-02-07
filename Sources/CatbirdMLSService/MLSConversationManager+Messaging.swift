@@ -4199,6 +4199,24 @@ public extension MLSConversationManager {
           logger.warning("⚠️ Failed to invalidate Welcome: \(error.localizedDescription)")
         }
 
+        Task.detached(priority: .utility) { [mlsClient, logger, userDid] in
+          do {
+            _ = try await mlsClient.syncKeyPackageHashes(for: userDid)
+          } catch {
+            logger.warning(
+              "⚠️ [NoMatchingKeyPackage] Failed to sync key package hashes: \(error.localizedDescription)"
+            )
+          }
+
+          do {
+            _ = try await mlsClient.monitorAndReplenishBundles(for: userDid)
+          } catch {
+            logger.warning(
+              "⚠️ [NoMatchingKeyPackage] Failed to replenish key packages: \(error.localizedDescription)"
+            )
+          }
+        }
+
         logger.info("🔄 Attempting fallback to External Commit for conversation \(convo.groupId)...")
 
         groupIdHex = try await attemptExternalCommitFallback(
@@ -4307,8 +4325,25 @@ public extension MLSConversationManager {
         "❌ [External Commit Fallback] Failed for \(convoId.prefix(16))...: \(error.localizedDescription)"
       )
 
-      // Check if this is a stale GroupInfo error - request refresh from active members
       let errorMessage = error.localizedDescription.lowercased()
+
+      if let apiError = error as? MLSAPIError,
+        case .httpError(let statusCode, _) = apiError,
+        statusCode == 403
+      {
+        logger.warning(
+          "⚠️ [External Commit Fallback] HTTP 403 - external commit not allowed, requesting re-addition"
+        )
+        await readdition(convoId: convoId)
+
+        if let recoveryManager = await mlsClient.recovery(for: userDid) {
+          await recoveryManager.recordFailedRejoin(convoId: convoId)
+        }
+
+        throw MLSConversationError.operationFailed("External Commit forbidden (HTTP 403)")
+      }
+
+      // Check if this is a stale GroupInfo error - request refresh from active members
       let isStaleGroupInfo =
         errorMessage.contains("expired") || errorMessage.contains("stale")
         || errorMessage.contains("groupinfo expired")
@@ -4328,13 +4363,25 @@ public extension MLSConversationManager {
           || errorMessage.contains("server data corrupted")
 
         if isServerDataCorruption {
-          // Mark as server-corrupted to prevent further retry loops
-          await recoveryManager.markConversationServerCorrupted(
-            convoId: convoId,
-            errorMessage: "External Commit failed (server data): \(error.localizedDescription)"
-          )
-          logger.error(
-            "🚫 [External Commit Fallback] Server data corrupted - marked conversation as broken")
+          await recoveryManager.recordFailedRejoin(convoId: convoId)
+          let remaining = await recoveryManager.remainingRejoinAttempts(convoId: convoId)
+          if remaining == 0 {
+            // Mark as server-corrupted after repeated failures to avoid premature lockout
+            await recoveryManager.markConversationServerCorrupted(
+              convoId: convoId,
+              errorMessage: "External Commit failed (server data): \(error.localizedDescription)"
+            )
+            logger.error(
+              "🚫 [External Commit Fallback] Server data corrupted - marked conversation as broken")
+          } else {
+            logger.warning(
+              "⚠️ [External Commit Fallback] Server data issue detected - will retry after refresh"
+            )
+            await groupInfoRefresh(convoId: convoId)
+            logger.info(
+              "📊 [External Commit Fallback] \(remaining) rejoin attempts remaining for \(convoId.prefix(16))..."
+            )
+          }
         } else {
           await recoveryManager.recordFailedRejoin(convoId: convoId)
           let remaining = await recoveryManager.remainingRejoinAttempts(convoId: convoId)

@@ -44,6 +44,12 @@ extension MLSConversationManager {
     }
     missingConversationsTask = nil
 
+    if let task = keyPackageRefreshTask {
+      task.cancel()
+      logger.debug("   Cancelled keyPackageRefreshTask")
+    }
+    keyPackageRefreshTask = nil
+
     if let task = groupInfoRefreshTask {
       task.cancel()
       logger.debug("   Cancelled groupInfoRefreshTask")
@@ -179,6 +185,9 @@ extension MLSConversationManager {
     // CRITICAL: Cancel the missing conversations task to prevent hang during reset
     missingConversationsTask?.cancel()
     missingConversationsTask = nil
+
+    keyPackageRefreshTask?.cancel()
+    keyPackageRefreshTask = nil
 
     deduplicationCleanupTimer?.invalidate()
     deduplicationCleanupTimer = nil
@@ -318,6 +327,7 @@ extension MLSConversationManager {
     // CRITICAL FIX: Include missingConversationsTask which runs External Commit operations
     // Previously this task was fire-and-forget, causing 40+ second hangs during account switch
     if let task = missingConversationsTask { localTasks.append(task) }
+    if let task = keyPackageRefreshTask { localTasks.append(task) }
 
     // 3. Trigger cancellation
     cleanupTask?.cancel()
@@ -336,6 +346,9 @@ extension MLSConversationManager {
     // External Commit operations inside detectAndRejoinMissingConversations() are long-running
     missingConversationsTask?.cancel()
     missingConversationsTask = nil
+
+    keyPackageRefreshTask?.cancel()
+    keyPackageRefreshTask = nil
 
     // 4. Timers don't support async wait, just invalidate
     deduplicationCleanupTimer?.invalidate()
@@ -723,10 +736,12 @@ extension MLSConversationManager {
     }
 
     print("[MLSConversationManager.initialize] Spawning key package refresh task...")
-    Task.detached(priority: .utility) { [weak self] in
+    keyPackageRefreshTask = Task(priority: .utility) { [weak self] in
       guard let self else { return }
       do {
+        try Task.checkCancellation()
         try await self.smartRefreshKeyPackages()
+        try Task.checkCancellation()
         await self.keyPackageManager.setLastRefresh(Date())
       } catch is CancellationError {
         self.logger.warning("⚠️ Initial key package upload cancelled - will retry on next trigger")
@@ -1044,7 +1059,11 @@ extension MLSConversationManager {
     logger.info("🔄 [attemptRejoin] Welcome unavailable for \(label), attempting External Commit...")
 
     do {
-      _ = try await mlsClient.joinByExternalCommit(for: userDid, convoId: convoId)
+      _ = try await attemptExternalCommitFallback(
+        convoId: convoId,
+        userDid: userDid,
+        reason: "Welcome unavailable (rejoin)"
+      )
       logger.info("✅ Successfully rejoined \(label) via External Commit")
       await clearConversationRejoinFlag(convoId)
       return true

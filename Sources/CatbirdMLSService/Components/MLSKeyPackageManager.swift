@@ -161,7 +161,11 @@ public actor MLSKeyPackageManager {
   }
 
   /// Smart key package refresh using monitor (preferred method)
-  public func smartRefreshKeyPackages(for userDid: String, isShuttingDown: Bool) async throws {
+  public func smartRefreshKeyPackages(
+    for userDid: String,
+    isShuttingDown: Bool,
+    maxGeneratedPackages: Int? = nil
+  ) async throws {
     logger.debug("🔍 Checking if key package refresh is needed (smart monitoring)")
     
     if isShuttingDown {
@@ -215,7 +219,7 @@ public actor MLSKeyPackageManager {
 
     guard let monitor = monitor else {
       logger.warning("⚠️ Monitor not initialized, using basic refresh")
-      return try await refreshKeyPackagesBasic(for: userDid)
+      return try await refreshKeyPackagesBasic(for: userDid, maxGeneratedPackages: maxGeneratedPackages)
     }
 
     let cache = MLSKeyPackageCache.shared
@@ -272,7 +276,11 @@ public actor MLSKeyPackageManager {
       if recommendation.shouldReplenish {
         logger.warning(
           "⚠️ Replenishment needed [\(recommendation.priority.rawValue)]: \(recommendation.reason)")
-        try await uploadKeyPackageBatchSmart(for: userDid, count: recommendation.recommendedBatchSize)
+        try await uploadKeyPackageBatchSmart(
+          for: userDid,
+          count: recommendation.recommendedBatchSize,
+          maxGeneratedPackages: maxGeneratedPackages
+        )
         lastKeyPackageRefresh = Date()
       } else {
         logger.debug("✅ Key packages are sufficient: \(stats.available) available")
@@ -285,7 +293,10 @@ public actor MLSKeyPackageManager {
   }
 
   /// Basic refresh without smart monitoring
-  public func refreshKeyPackagesBasic(for userDid: String) async throws {
+  public func refreshKeyPackagesBasic(
+    for userDid: String,
+    maxGeneratedPackages: Int? = nil
+  ) async throws {
     logger.debug("Checking if key package refresh is needed (basic mode)")
 
     do {
@@ -298,7 +309,11 @@ public actor MLSKeyPackageManager {
           "⚠️ Key package count (\(stats.available)) below threshold (\(stats.threshold)) - replenishing..."
         )
         let neededCount = max(100 - stats.available, 0)
-        try await uploadKeyPackageBatchSmart(for: userDid, count: neededCount)
+        try await uploadKeyPackageBatchSmart(
+          for: userDid,
+          count: neededCount,
+          maxGeneratedPackages: maxGeneratedPackages
+        )
         lastKeyPackageRefresh = Date()
       } else {
         logger.debug("✅ Key packages are sufficient: \(stats.available) available")
@@ -311,7 +326,11 @@ public actor MLSKeyPackageManager {
   }
 
   /// Refresh key packages based on time interval
-  public func refreshKeyPackagesBasedOnInterval(for userDid: String, isShuttingDown: Bool) async throws {
+  public func refreshKeyPackagesBasedOnInterval(
+    for userDid: String,
+    isShuttingDown: Bool,
+    maxGeneratedPackages: Int? = nil
+  ) async throws {
     logger.debug("Checking if key package refresh is needed based on interval")
 
     if let lastRefresh = lastKeyPackageRefresh {
@@ -325,12 +344,20 @@ public actor MLSKeyPackageManager {
     }
 
     logger.info("Refreshing key packages based on interval")
-    try await smartRefreshKeyPackages(for: userDid, isShuttingDown: isShuttingDown)
+    try await smartRefreshKeyPackages(
+      for: userDid,
+      isShuttingDown: isShuttingDown,
+      maxGeneratedPackages: maxGeneratedPackages
+    )
     lastKeyPackageRefresh = Date()
   }
 
   /// Smart batch upload using batch API
-  public func uploadKeyPackageBatchSmart(for userDid: String, count: Int = 100) async throws {
+  public func uploadKeyPackageBatchSmart(
+    for userDid: String,
+    count: Int = 100,
+    maxGeneratedPackages: Int? = nil
+  ) async throws {
     logger.info("🔄 Starting smart key package replenishment (requested count: \(count))...")
 
     // STEP 0: Ensure device is registered
@@ -400,7 +427,21 @@ public actor MLSKeyPackageManager {
     }
 
     // STEP 5: Cap at API batch limit
-    let generateCount = min(totalToGenerate, 100)
+    let requestedGenerateCount = min(totalToGenerate, 100)
+    let generateCount: Int
+    if let maxGeneratedPackages {
+      generateCount = min(requestedGenerateCount, maxGeneratedPackages)
+      if generateCount < requestedGenerateCount {
+        logger.info(
+          "📦 Applying generation cap: \(generateCount) of \(requestedGenerateCount) packages")
+      }
+    } else {
+      generateCount = requestedGenerateCount
+    }
+    if generateCount == 0 {
+      logger.info("⏸️ Generation capped at 0 - skipping key package batch")
+      return
+    }
     let willUploadToServer = serverUploadNeeded > 0
 
     logger.info("📦 Generating \(generateCount) key packages")
@@ -410,6 +451,7 @@ public actor MLSKeyPackageManager {
     var packages: [MLSKeyPackageUploadData] = []
     
     for _ in 0..<generateCount {
+      try Task.checkCancellation()
       // 🔥 CRITICAL FIX: Use clientIdentity (did#deviceUUID), NOT bare DID
       // This ensures the signer registered during device registration is reused,
       // preventing signature key mismatch when messages are verified by recipients
@@ -434,6 +476,7 @@ public actor MLSKeyPackageManager {
     logger.info("✅ Generated \(generateCount) key packages (Persisted via FFI)")
 
     // STEP 8: Upload to server if needed
+    try Task.checkCancellation()
     if willUploadToServer {
       logger.info("📤 Uploading \(packages.count) packages to server\(useRecoveryMode ? " (recovery mode)" : "")")
       

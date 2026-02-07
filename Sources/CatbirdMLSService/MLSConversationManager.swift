@@ -135,6 +135,9 @@ public final class MLSConversationManager {
   /// during account switching as External Commit operations continued running
   public var missingConversationsTask: Task<Void, Never>?
 
+  /// Background task for initial key package refresh during startup
+  public var keyPackageRefreshTask: Task<Void, Never>?
+
   /// Session generation ID - changes on each initialization
   /// Used to invalidate stale operations from previous account/session
   public let sessionGeneration = UUID()

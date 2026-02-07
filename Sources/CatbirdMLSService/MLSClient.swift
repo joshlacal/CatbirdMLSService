@@ -808,11 +808,44 @@ public actor MLSClient {
         }
 
         // 6. Send Commit to Server
-        let _ = try await apiClient.processExternalCommit(
-          convoId: convoId,
-          externalCommit: result.commitData,
-          groupInfo: nil  // We don't need to update GroupInfo here, just joining
-        )
+        do {
+          let _ = try await apiClient.processExternalCommit(
+            convoId: convoId,
+            externalCommit: result.commitData,
+            groupInfo: nil  // We don't need to update GroupInfo here, just joining
+          )
+        } catch let apiError as MLSAPIError {
+          if case .httpError(let statusCode, _) = apiError, statusCode == 403 {
+            logger.warning(
+              "⚠️ [MLSClient.joinByExternalCommit] External Commit rejected (HTTP 403) - requesting GroupInfo refresh"
+            )
+            do {
+              let (requested, activeMembers) = try await apiClient.groupInfoRefresh(convoId: convoId)
+              if requested {
+                logger.info(
+                  "✅ [MLSClient.joinByExternalCommit] GroupInfo refresh requested - \(activeMembers ?? 0) active members notified"
+                )
+              } else {
+                logger.warning(
+                  "⚠️ [MLSClient.joinByExternalCommit] No active members to refresh GroupInfo")
+              }
+            } catch {
+              logger.warning(
+                "⚠️ [MLSClient.joinByExternalCommit] GroupInfo refresh request failed: \(error.localizedDescription)"
+              )
+            }
+
+            if attempt < maxRetries {
+              let waitSeconds = 2 * attempt
+              logger.info(
+                "🔄 [MLSClient.joinByExternalCommit] Waiting ~\(waitSeconds)s before retry after 403..."
+              )
+              try await Task.sleep(for: .seconds(waitSeconds))
+              continue
+            }
+          }
+          throw apiError
+        }
 
         logger.info(
           "✅ [MLSClient.joinByExternalCommit] Success - Joined group \(convoId) on attempt \(attempt)"
@@ -1530,6 +1563,35 @@ public actor MLSClient {
         try ctx.getEpoch(groupId: groupId)
       }
     } catch let error as MlsError {
+      let shouldReload: Bool
+      switch error {
+      case .GroupNotFound:
+        logger.warning(
+          "⚠️ [MLSClient.getEpoch] Group not found - attempting context reload before retry")
+        shouldReload = true
+      case .ContextNotInitialized:
+        logger.warning(
+          "⚠️ [MLSClient.getEpoch] Context not initialized - attempting context reload before retry"
+        )
+        shouldReload = true
+      case .ContextClosed:
+        logger.warning("⚠️ [MLSClient.getEpoch] Context closed - attempting context reload before retry")
+        shouldReload = true
+      default:
+        shouldReload = false
+      }
+
+      if shouldReload {
+        do {
+          _ = try await reloadContextFromStorage(for: userDID)
+          return try await runFFIWithRecovery(for: userDID) { ctx in
+            try ctx.getEpoch(groupId: groupId)
+          }
+        } catch {
+          logger.error("Get epoch retry failed: \(error.localizedDescription)")
+        }
+      }
+
       logger.error("Get epoch failed: \(error.localizedDescription)")
       throw MLSError.operationFailed
     }
