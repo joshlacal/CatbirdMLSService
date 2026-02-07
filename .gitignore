@@ -20,3 +20,11 @@ Packages/
 # Session files
 .letta/
 .claude/
+
+# Ignore local build outputs and large static libraries
+build/
+build/Release/
+build/Release/libMLSFFICore.a
+build/Release/*.a
+*.xcframework
+*.framework

@@ -1,4 +1,0 @@
-module CatbirdMLSService {
-header "CatbirdMLSService-Swift.h"
-export *
-}
