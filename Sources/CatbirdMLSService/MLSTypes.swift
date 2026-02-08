@@ -105,6 +105,8 @@ public struct MLSGroupState {
   public var convoId: String
   public var epoch: UInt64
   public var members: Set<String>
+  /// Last epoch reported by the server (from getConvos). Used to gate GroupInfo uploads.
+  public var knownServerEpoch: UInt64?
 }
 
 /// Key package with hash tracking for lifecycle management

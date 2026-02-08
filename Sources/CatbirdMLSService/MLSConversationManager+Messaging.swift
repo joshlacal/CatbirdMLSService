@@ -1142,7 +1142,7 @@ public extension MLSConversationManager {
   ///   - localEpoch: Current local epoch from FFI
   ///   - targetEpoch: The epoch of the message we're trying to decrypt
   /// - Returns: true if any commits were successfully processed (epoch advanced)
-  private func fetchAndProcessMissingCommits(
+  internal func fetchAndProcessMissingCommits(
     conversationID: String,
     groupId: String,
     localEpoch: UInt64,
@@ -1163,16 +1163,17 @@ public extension MLSConversationManager {
     logger.info("🔄 [EPOCH-RECOVERY] Fetching commits for epoch gap: local=\(localEpoch) → target=\(targetEpoch) (gap=\(epochGap))")
     
     do {
-      // Fetch commits from server covering the epoch range
-      // We request fromEpoch = localEpoch (current) to toEpoch = targetEpoch
+      // Fetch commits from server for the epoch range we're missing.
+      // Server stores commits at their POST-advance epoch (commit at epoch N advanced the group TO N).
+      // Since we're already at localEpoch, we need commits starting from localEpoch + 1.
       let commits = try await apiClient.getCommits(
         convoId: conversationID,
-        fromEpoch: Int(localEpoch),
+        fromEpoch: Int(localEpoch) + 1,
         toEpoch: targetEpoch
       )
       
       guard !commits.isEmpty else {
-        logger.warning("⚠️ [EPOCH-RECOVERY] Server returned no commits for epoch range \(localEpoch)-\(targetEpoch)")
+        logger.warning("⚠️ [EPOCH-RECOVERY] Server returned no commits for epoch range \(localEpoch + 1)-\(targetEpoch)")
         return false
       }
       
@@ -1182,32 +1183,52 @@ public extension MLSConversationManager {
       let sortedCommits = commits.sorted { $0.epoch < $1.epoch }
       
       var processedCount = 0
+      var skippedOwnCount = 0
+      var currentEpoch = localEpoch
       for commit in sortedCommits {
-        // Skip commits we've already processed
-        if UInt64(commit.epoch) <= localEpoch {
+        // Skip commits at or below our current epoch
+        if UInt64(commit.epoch) <= currentEpoch {
           logger.debug("[EPOCH-RECOVERY] Skipping already-processed commit epoch=\(commit.epoch)")
+          continue
+        }
+        
+        // Skip own commits — they were already applied when we created them.
+        // Re-read FFI epoch since it should already be at/past this epoch.
+        if commit.sender.hasPrefix(userDid) {
+          logger.debug("[EPOCH-RECOVERY] Skipping own commit epoch=\(commit.epoch)")
+          skippedOwnCount += 1
+          if let groupIdData = Data(hexEncoded: groupId) {
+            currentEpoch = (try? await mlsClient.getEpoch(for: userDid, groupId: groupIdData)) ?? currentEpoch
+          }
           continue
         }
         
         // Get commit data (Bytes type from AT Protocol)
         guard let commitBytes = commit.commitData else {
-            logger.warning("⚠️ [EPOCH-RECOVERY] Commit data missing for epoch=\(commit.epoch)")
-            continue
+          logger.warning("⚠️ [EPOCH-RECOVERY] Commit data missing for epoch=\(commit.epoch)")
+          break  // Can't skip — sequential processing required
         }
         
         do {
-          // Process the commit through OpenMLS
+          // Process the commit through OpenMLS (stages + merges)
           try await processCommit(groupId: groupId, commitData: commitBytes.data)
           processedCount += 1
-          logger.info("✅ [EPOCH-RECOVERY] Processed commit for epoch=\(commit.epoch)")
+          
+          // Re-read actual epoch from FFI after successful merge
+          if let groupIdData = Data(hexEncoded: groupId) {
+            currentEpoch = (try? await mlsClient.getEpoch(for: userDid, groupId: groupIdData)) ?? currentEpoch
+          }
+          logger.info("✅ [EPOCH-RECOVERY] Processed commit for epoch=\(commit.epoch), FFI now at \(currentEpoch)")
         } catch {
           logger.error("❌ [EPOCH-RECOVERY] Failed to process commit epoch=\(commit.epoch): \(error.localizedDescription)")
-          // Continue trying other commits - maybe we can skip a corrupt one
+          // MLS commits must be processed sequentially — cannot skip failed commits
+          logger.warning("⚠️ [EPOCH-RECOVERY] Stopping commit processing - sequential order required")
+          break
         }
       }
       
-      if processedCount > 0 {
-        logger.info("🎉 [EPOCH-RECOVERY] Successfully processed \(processedCount) commits, epoch should now be advanced")
+      if processedCount > 0 || skippedOwnCount > 0 {
+        logger.info("🎉 [EPOCH-RECOVERY] Processed \(processedCount) commits, skipped \(skippedOwnCount) own commits")
         return true
       } else {
         logger.warning("⚠️ [EPOCH-RECOVERY] No commits were successfully processed")
@@ -2955,15 +2976,34 @@ public extension MLSConversationManager {
       throw MLSConversationError.invalidGroupId
     }
 
-    // Process commit through MLS client
+    // Process commit through MLS client (stages the commit, does NOT merge)
     let result = try await mlsClient.processCommit(
       for: userDid, groupId: groupIdData, commitData: commitData)
-    logger.info("Processed commit: new epoch \(result.newEpoch)")
-    let epochInt = Int(clamping: result.newEpoch)
+    let preMergeEpoch = result.newEpoch
+    logger.debug("Staged commit: pre-merge epoch \(preMergeEpoch)")
+
+    // Merge the staged commit to actually advance the epoch
+    let mergedEpoch: UInt64
+    do {
+      mergedEpoch = try await mlsClient.mergeStagedCommit(for: userDid, groupId: groupIdData)
+    } catch {
+      logger.error("❌ Failed to merge staged commit: \(error.localizedDescription)")
+      // Clear the pending staged commit so future commits aren't blocked
+      try? await mlsClient.clearPendingCommit(for: userDid, groupId: groupIdData)
+      throw error
+    }
+
+    // Detect own-commit no-op: merge succeeded but epoch didn't advance
+    if mergedEpoch == preMergeEpoch {
+      logger.info("ℹ️ Commit merged as no-op (own commit replay) - epoch unchanged at \(mergedEpoch)")
+      return
+    }
+    logger.info("✅ Merged commit: epoch advanced to \(mergedEpoch)")
+    let epochInt = Int(clamping: mergedEpoch)
 
     // Update local group state with new epoch
     if var state = groupStates[groupId] {
-      state.epoch = result.newEpoch
+      state.epoch = mergedEpoch
       groupStates[groupId] = state
 
       // Persist epoch to keychain
@@ -3008,7 +3048,7 @@ public extension MLSConversationManager {
 
       // Notify observers of epoch update
       notifyObservers(.epochUpdated(state.convoId, epochInt))
-      logger.debug("Updated local epoch for group \(groupId.prefix(8))... to \(result.newEpoch)")
+      logger.debug("Updated local epoch for group \(groupId.prefix(8))... to \(mergedEpoch)")
     } else {
       logger.warning(
         "No local group state found for group \(groupId.prefix(8))... after processing commit")
@@ -3475,11 +3515,21 @@ public extension MLSConversationManager {
     for candidate in candidates {
       guard !isShuttingDown, !Task.isCancelled else { break }
 
+      // Check local epoch vs known server epoch before attempting upload
+      let groupIdHex = candidate.groupId.hexEncodedString()
+      let knownServerEpoch: UInt64?
+      if let state = groupStates[groupIdHex] {
+        knownServerEpoch = state.knownServerEpoch
+      } else {
+        knownServerEpoch = nil
+      }
+
       do {
         try await mlsClient.publishGroupInfo(
           for: userDid,
           convoId: candidate.convoId,
-          groupId: candidate.groupId
+          groupId: candidate.groupId,
+          knownServerEpoch: knownServerEpoch
         )
         successCount += 1
         logger.debug("✅ [GroupInfo] Refreshed GroupInfo for \(candidate.convoId.prefix(16))")

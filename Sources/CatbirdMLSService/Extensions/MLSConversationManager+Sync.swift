@@ -216,7 +216,29 @@ public extension MLSConversationManager {
             if serverEpoch != ffiEpoch {
               logger.warning("⚠️ EPOCH MISMATCH in syncWithServer (new group):")
               logger.warning("   Server: \(serverEpoch), FFI: \(ffiEpoch)")
-              logger.warning("   Using FFI epoch")
+
+              // Attempt to catch up by processing missed commits
+              if serverEpoch > ffiEpoch {
+                let caught = await fetchAndProcessMissingCommits(
+                  conversationID: convo.groupId,
+                  groupId: convo.groupId,
+                  localEpoch: ffiEpoch,
+                  targetEpoch: Int(serverEpoch)
+                )
+                if caught {
+                  ffiEpoch = (try? await mlsClient.getEpoch(for: userDid, groupId: groupIdData)) ?? ffiEpoch
+                  logger.info("✅ Epoch catch-up successful (new group): now at \(ffiEpoch)")
+                } else {
+                  logger.warning("⚠️ Epoch catch-up failed (new group) - attempting forceRejoin")
+                  do {
+                    try await forceRejoin(for: convo.groupId)
+                    ffiEpoch = (try? await mlsClient.getEpoch(for: userDid, groupId: groupIdData)) ?? ffiEpoch
+                    logger.info("✅ forceRejoin successful (new group): now at epoch \(ffiEpoch)")
+                  } catch {
+                    logger.error("❌ forceRejoin failed (new group): \(error.localizedDescription)")
+                  }
+                }
+              }
             }
           } catch {
             // Group may not exist in FFI yet (e.g., before processing Welcome)
@@ -228,7 +250,8 @@ public extension MLSConversationManager {
             groupId: convo.groupId,
             convoId: convo.groupId,
             epoch: ffiEpoch,  // Use FFI epoch if available, else server epoch
-            members: Set(convo.members.map { $0.did.description })
+            members: Set(convo.members.map { $0.did.description }),
+            knownServerEpoch: serverEpoch
           )
         } else if var state = groupStates[convo.groupId] {
           if state.epoch != convo.epoch {
@@ -250,7 +273,29 @@ public extension MLSConversationManager {
               if serverEpoch != ffiEpoch {
                 logger.warning("⚠️ EPOCH MISMATCH in syncWithServer (update):")
                 logger.warning("   Server: \(serverEpoch), FFI: \(ffiEpoch)")
-                logger.warning("   Using FFI epoch")
+
+                // Attempt to catch up by processing missed commits
+                if serverEpoch > ffiEpoch {
+                  let caught = await fetchAndProcessMissingCommits(
+                    conversationID: convo.groupId,
+                    groupId: convo.groupId,
+                    localEpoch: ffiEpoch,
+                    targetEpoch: Int(serverEpoch)
+                  )
+                  if caught {
+                    ffiEpoch = (try? await mlsClient.getEpoch(for: userDid, groupId: groupIdData)) ?? ffiEpoch
+                    logger.info("✅ Epoch catch-up successful (update): now at \(ffiEpoch)")
+                  } else {
+                    logger.warning("⚠️ Epoch catch-up failed (update) - attempting forceRejoin")
+                    do {
+                      try await forceRejoin(for: convo.groupId)
+                      ffiEpoch = (try? await mlsClient.getEpoch(for: userDid, groupId: groupIdData)) ?? ffiEpoch
+                      logger.info("✅ forceRejoin successful (update): now at epoch \(ffiEpoch)")
+                    } catch {
+                      logger.error("❌ forceRejoin failed (update): \(error.localizedDescription)")
+                    }
+                  }
+                }
               }
             } catch {
               logger.debug("Could not get FFI epoch for \(convo.groupId.prefix(16)): \(error)")
@@ -258,6 +303,7 @@ public extension MLSConversationManager {
             }
 
             state.epoch = ffiEpoch  // Use FFI epoch if available, else server epoch
+            state.knownServerEpoch = UInt64(convo.epoch)
             state.members = Set(convo.members.map { $0.did.description })
             groupStates[convo.groupId] = state
 

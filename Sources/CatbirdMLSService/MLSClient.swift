@@ -984,7 +984,7 @@ public actor MLSClient {
   /// Should be called after any operation that advances the epoch (add, remove, update, commit)
   /// CRITICAL: This function now throws errors - callers must handle failures
   /// - Throws: MLSError if export fails, validation fails, or upload fails
-  public func publishGroupInfo(for userDID: String, convoId: String, groupId: Data) async throws {
+  public func publishGroupInfo(for userDID: String, convoId: String, groupId: Data, knownServerEpoch: UInt64? = nil) async throws {
     logger.info("📤 [MLSClient.publishGroupInfo] Starting for \(convoId)")
 
     let normalizedDID = normalizeUserDID(userDID)
@@ -1035,6 +1035,12 @@ public actor MLSClient {
     // 3. Get current epoch
     let epoch = try await runFFIWithRecovery(for: userDID) { ctx in
       try ctx.getEpoch(groupId: groupId)
+    }
+
+    // 3a. Guard against uploading stale GroupInfo (epoch behind server)
+    if let serverEpoch = knownServerEpoch, epoch < serverEpoch {
+      logger.warning("⚠️ [MLSClient.publishGroupInfo] Skipping upload - local epoch \(epoch) < server epoch \(serverEpoch) for \(convoId.prefix(16))")
+      return
     }
 
     // 4. Upload to server (MLSAPIClient now has retry logic + verification)
